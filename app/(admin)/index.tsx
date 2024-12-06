@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const explore = () => {
+const index = () => {
   return (
     <View>
-      <Text>explore</Text>
+      <Text>admin</Text>
     </View>
   )
 }
 
-export default explore
+export default index
