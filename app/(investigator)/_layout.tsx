@@ -3,8 +3,8 @@ import React from 'react'
 import { Stack, Tabs } from 'expo-router'
 const _layout = () => {
   return (
-    <Tabs>
-        <Tabs.Screen name="index" />
+    <Tabs screenOptions={{headerShown:false}}>
+        <Tabs.Screen name="index"  />
         
     </Tabs>
   )

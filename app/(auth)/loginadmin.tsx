@@ -27,11 +27,10 @@ export default function Login() {
     try {
       const response = await axios.post('http://192.168.63.86:8000/api/accounts/login/', credentials,{withCredentials: true});
       if (response.status === 200) {
-
-        // Save session ID in AsyncStorage
-        const tokenId = response.data.token // Adjust based on backend
+        const tokenId = response.data.token
         if (tokenId) {
           await AsyncStorage.setItem('sessionid', tokenId);
+          await AsyncStorage.setItem('id', response.data.id);
           console.log('Login successful');
           router.replace("/(admin)")
         }
