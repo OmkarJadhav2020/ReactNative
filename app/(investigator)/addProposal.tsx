@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,197 +7,166 @@ import {
   TouchableOpacity,
   ScrollView,
   Platform,
+  Alert,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import axios from "axios";
+import { router } from "expo-router";
+import { Picker } from "@react-native-picker/picker"; // Add Picker import
 
 const ProjectProposalForm = () => {
   const [formData, setFormData] = useState({
-    agencyName: "",
-    coordinator: "",
-    subAgency: "",
-    coInvestigator: "",
-    issueDefinition: "",
+    agency_name: "",
+    coordinator: "", // Dropdown value
+    sub_agency: "",
+    co_investigator: "", // Dropdown value
+    issue_definition: "",
     objective: "",
-    justificationArea: "",
-    coalBenefit: "",
-    subjectJustification: "",
-    workPlan: "",
+    justification_area: "",
+    coal_benefit: "",
+    subject_justification: "",
+    work_plan: "",
     methodology: "",
     organization: "",
-    startDate: new Date(),
-    endDate: new Date(),
+    start_date: new Date().toISOString().split("T")[0],
+    end_date: new Date().toISOString().split("T")[0],
   });
 
   const [tableData, setTableData] = useState({
-    capitalExpenditure: "",
-    totalCapital: "",
+    capital_expenditure: "",
+    total_capital: "",
     salaries: "",
     consumables: "",
     travel: "",
     workshops: "",
-    totalRevenue: "",
+    total_revenue: "",
   });
 
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
 
-  const handleInputChange = (field:any, value:any) => {
+  const [coordinatorOption,setCoordinatorOption] = useState([{"id" : 1,"username" : "omkar"}]);
+
+  useEffect(()=>{
+    const getData = async ()=>{
+      const response = await axios.get("http://192.168.63.86:8000/api/accounts/getlist");
+      if(response)
+      {
+        setCoordinatorOption(response.data.data)
+        console.log(coordinatorOption)
+      }
+    }
+    getData();
+  },[])
+
+  const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleTableChange = (field:any, value:any) => {
+  const handleTableChange = (field, value) => {
     setTableData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = () => {
-    alert("Form Submitted Successfully!");
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post("http://192.168.63.86:8000/api/accounts/proposals/", {
+        ...formData,
+        ...tableData,
+      });
+      Alert.alert("Success", "Project Proposal Submitted Successfully!");
+      console.log("Response:", response.data);
+      router.replace("/(investigator)");
+    } catch (error) {
+      console.error("Submission Error:", error.response.data);
+      Alert.alert("Error", "Failed to submit form. Please check your input.");
+    }
   };
 
-  const handleDateChange = (field:any, event:any, selectedDate:any) => {
+  const handleDateChange = (field, event, selectedDate) => {
     const currentDate = selectedDate || formData[field];
+    setFormData((prev) => ({ ...prev, [field]: currentDate.toISOString().split("T")[0] }));
     if (Platform.OS === "android") {
-      field === "startDate"
+      field === "start_date"
         ? setShowStartDatePicker(false)
         : setShowEndDatePicker(false);
     }
-    setFormData((prev) => ({ ...prev, [field]: currentDate }));
   };
 
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.heading}>Project Proposal for S&T Grant of MOC</Text>
 
-      <Text style={styles.label}>Implementing Agency Name</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter implementing agency name"
-        value={formData.agencyName}
-        onChangeText={(value) => handleInputChange("agencyName", value)}
-      />
+      {Object.keys(formData).map((field, index) => (
+        <View key={index}>
+          <Text style={styles.label}>{field.replace(/_/g, " ").toUpperCase()}</Text>
+          {field === "start_date" || field === "end_date" ? (
+            <>
+              <TouchableOpacity
+                onPress={() =>
+                  field === "start_date"
+                    ? setShowStartDatePicker(true)
+                    : setShowEndDatePicker(true)
+                }
+              >
+                <Text style={styles.dateDisplay}>{formData[field]}</Text>
+              </TouchableOpacity>
+              {showStartDatePicker && field === "start_date" && (
+                <DateTimePicker
+                  value={new Date(formData.start_date)}
+                  mode="date"
+                  display="default"
+                  onChange={(event, date) => handleDateChange(field, event, date)}
+                />
+              )}
+              {showEndDatePicker && field === "end_date" && (
+                <DateTimePicker
+                  value={new Date(formData.end_date)}
+                  mode="date"
+                  display="default"
+                  onChange={(event, date) => handleDateChange(field, event, date)}
+                />
+              )}
+            </>
+          ) : field === "coordinator" ? (
+            <Picker
+              selectedValue={formData.coordinator}
+              onValueChange={(value) => handleInputChange("coordinator", value)}
+              style={styles.input}
+            >
+              <Picker.Item label="Select Coordinator" value="" />
+              {coordinatorOption.map((option, idx) => (
+                <Picker.Item key={option.id} label={option.username} value={option.id} />
+              ))}
+            </Picker>
+          ) : field === "co_investigator" ? (
+            <Picker
+              selectedValue={formData.co_investigator}
+              onValueChange={(value) => handleInputChange("co_investigator", value)}
+              style={styles.input}
+            >
+              <Picker.Item label="Select Co-Investigator" value="" />
+              {coordinatorOption.map((option, idx) => (
+                <Picker.Item key={option.id} label={option.username} value={option.id} />
+              ))}
+            </Picker>
+          ) : (
+            <TextInput
+              style={styles.input}
+              value={formData[field]}
+              onChangeText={(value) => handleInputChange(field, value)}
+            />
+          )}
+        </View>
+      ))}
 
-      <Text style={styles.label}>Project Coordinator/Leader/Investigator</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter project coordinator name"
-        value={formData.coordinator}
-        onChangeText={(value) => handleInputChange("coordinator", value)}
-      />
-
-      <Text style={styles.label}>Sub Implementing Agency</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter sub implementing agency"
-        value={formData.subAgency}
-        onChangeText={(value) => handleInputChange("subAgency", value)}
-      />
-
-      <Text style={styles.label}>Co-Investigator</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter co-investigator name"
-        value={formData.coInvestigator}
-        onChangeText={(value) => handleInputChange("coInvestigator", value)}
-      />
-
-      <Text style={styles.label}>Definition of Issue</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Define the issue"
-        value={formData.issueDefinition}
-        onChangeText={(value) => handleInputChange("issueDefinition", value)}
-      />
-
-      <Text style={styles.label}>Objective</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Select objective"
-        value={formData.objective}
-        onChangeText={(value) => handleInputChange("objective", value)}
-      />
-
-      <Text style={styles.label}>Justification of Project Area</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Justify the project area"
-        value={formData.justificationArea}
-        onChangeText={(value) => handleInputChange("justificationArea", value)}
-      />
-
-      <Text style={styles.label}>How is the Project Beneficial for Coal Industry?</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Explain the benefits"
-        value={formData.coalBenefit}
-        onChangeText={(value) => handleInputChange("coalBenefit", value)}
-      />
-
-      <Text style={styles.label}>Justification for Subject Area</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Justify the subject area"
-        value={formData.subjectJustification}
-        onChangeText={(value) => handleInputChange("subjectJustification", value)}
-      />
-
-      <Text style={styles.label}>Work Plan</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Describe the work plan"
-        value={formData.workPlan}
-        onChangeText={(value) => handleInputChange("workPlan", value)}
-      />
-
-      <Text style={styles.label}>Methodology</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Explain the methodology"
-        value={formData.methodology}
-        onChangeText={(value) => handleInputChange("methodology", value)}
-      />
-
-      <Text style={styles.label}>Organization of Work Element</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Organize work element"
-        value={formData.organization}
-        onChangeText={(value) => handleInputChange("organization", value)}
-      />
-
-      <Text style={styles.label}>Start Date</Text>
-      <TouchableOpacity onPress={() => setShowStartDatePicker(true)}>
-        <Text style={styles.dateDisplay}>{formData.startDate.toDateString()}</Text>
-      </TouchableOpacity>
-      {showStartDatePicker && (
-        <DateTimePicker
-          value={formData.startDate}
-          mode="date"
-          display="default"
-          onChange={(event, date) => handleDateChange("startDate", event, date)}
-        />
-      )}
-
-      <Text style={styles.label}>End Date</Text>
-      <TouchableOpacity onPress={() => setShowEndDatePicker(true)}>
-        <Text style={styles.dateDisplay}>{formData.endDate.toDateString()}</Text>
-      </TouchableOpacity>
-      {showEndDatePicker && (
-        <DateTimePicker
-          value={formData.endDate}
-          mode="date"
-          display="default"
-          onChange={(event, date) => handleDateChange("endDate", event, date)}
-        />
-      )}
-
-      <Text style={styles.tableHeading}>Budget Details</Text>
       {Object.keys(tableData).map((field, index) => (
         <View key={index}>
-          <Text style={styles.label}>{field.replace(/([A-Z])/g, " $1")}</Text>
+          <Text style={styles.label}>{field.replace(/_/g, " ").toUpperCase()}</Text>
           <TextInput
             style={styles.input}
-            placeholder=""
             value={tableData[field]}
             onChangeText={(value) => handleTableChange(field, value)}
+            keyboardType="numeric"
           />
         </View>
       ))}
@@ -244,24 +213,17 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: "center",
   },
-  tableHeading: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginVertical: 12,
-  },
   submitButton: {
     backgroundColor: "#000",
     padding: 16,
     borderRadius: 8,
-    bottom:10 ,
-    marginBottom:19 ,  
     alignItems: "center",
+    marginBottom: 19,
   },
   submitButtonText: {
     fontSize: 16,
     color: "#fff",
     fontWeight: "bold",
-    
   },
 });
 
