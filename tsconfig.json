@@ -13,5 +13,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-  ]
+, "app/(investigator)/index.tsx", "app/(investigator)/addProposal.tsx"  ]
 }
