@@ -30,7 +30,7 @@ export default function Login() {
         const tokenId = response.data.token
         if (tokenId) {
           await AsyncStorage.setItem('sessionid', tokenId);
-          await AsyncStorage.setItem('id', response.data.id);
+          await AsyncStorage.setItem('id', `${response.data.id}`);
           console.log('Login successful');
           router.replace("/(admin)")
         }

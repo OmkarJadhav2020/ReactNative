@@ -1,29 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; // For icons
-
-const DUMMY_DATA = [
-  {
-    id: '1',
-    title: 'Oil Refinery Project',
-    projectId: '32565432',
-    startDate: '15 Nov 2024',
-    endDate: '15 Jan 2025',
-    status: 'Processing',
-    progress: { completed: 80, remaining: 20 },
-    image: 'https://via.placeholder.com/400', // Replace with an actual image URL
-  },
-  {
-    id: '2',
-    title: 'Factory Upgrade',
-    projectId: '87234623',
-    startDate: '01 Dec 2024',
-    endDate: '15 Feb 2025',
-    status: 'In Review',
-    progress: { completed: 50, remaining: 50 },
-    image: 'https://via.placeholder.com/400', // Replace with another image URL
-  },
-];
+import axios from 'axios';
 
 const ProjectCard = ({ project }) => {
   return (
@@ -34,12 +12,12 @@ const ProjectCard = ({ project }) => {
       {/* Project Details */}
       <View style={styles.details}>
         <Text style={styles.projectTitle}>{project.title}</Text>
-        <Text style={styles.projectId}>ID: {project.projectId}</Text>
+        <Text style={styles.projectId}>ID: {project.id}</Text>
         <Text style={styles.date}>
-          Start Date: <Text style={styles.bold}>{project.startDate}</Text>
+          Start Date: <Text style={styles.bold}>{project.start_date}</Text>
         </Text>
         <Text style={styles.date}>
-          End Date: <Text style={styles.bold}>{project.endDate}</Text>
+          End Date: <Text style={styles.bold}>{project.end_date}</Text>
         </Text>
 
         {/* Status and Progress */}
@@ -54,11 +32,11 @@ const ProjectCard = ({ project }) => {
           </Text>
           <View style={styles.chartContainer}>
             <View style={styles.chart}>
-              <Text style={styles.percentage}>{project.progress.completed}%</Text>
+              <Text style={styles.percentage}>{project.current_progress_percentage}%</Text>
               <Text style={styles.textSmall}>Completed</Text>
             </View>
             <View style={styles.chart}>
-              <Text style={styles.percentage}>{project.progress.remaining}%</Text>
+              <Text style={styles.percentage}>{100-project.current_progress_percentage}%</Text>
               <Text style={styles.textSmall}>Remaining</Text>
             </View>
           </View>
@@ -74,6 +52,19 @@ const ProjectCard = ({ project }) => {
 };
 
 const App = () => {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const response = await axios.get("http://192.168.63.86:8000/api/accounts/projects/0/");
+        setData(response.data.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    getData();
+  }, []);
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -84,7 +75,7 @@ const App = () => {
 
       {/* Project List */}
       <FlatList
-        data={DUMMY_DATA}
+        data={data}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <ProjectCard project={item} />}
         contentContainerStyle={styles.list}
