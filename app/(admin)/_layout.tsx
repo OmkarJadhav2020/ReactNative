@@ -28,6 +28,13 @@ export default function Layout() {
             title: "Proposal",
           }}
         />
+        <Drawer.Screen
+          name="ask_anything"
+          options={{
+            drawerLabel: "Ask anything",
+            title: "Chatbot",
+          }}
+        />
       </Drawer>
     </GestureHandlerRootView>
   );

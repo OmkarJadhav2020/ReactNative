@@ -45,7 +45,7 @@ const ProjectCard = ({ project }) => {
       </View>
 
       {/* Summary Button */}
-      <TouchableOpacity style={styles.button} onPress={()=>{router.replace("/projectInfo")}}>
+      <TouchableOpacity style={styles.button} onPress={()=>{router.replace(`/projectInfo?id=${project.id}`)}}>
         <Text style={styles.buttonText}>View Summary</Text>
       </TouchableOpacity>
     </View>

@@ -40,7 +40,7 @@ const ProjectProposalForm = () => {
 
   const handleApprove = async (proposalId) => {
     try {
-      await axios.patch(`http://${baseURL}/api/accounts/proposals/${proposalId}/`, { status: "approved" });
+      await axios.patch(`http://${baseURL}:8000/api/accounts/proposals/${proposalId}/`, { status: "approved" });
       Alert.alert("Approved", "Proposal approved successfully!");
       setProposals(proposals.filter((proposal) => proposal.id !== proposalId));
 

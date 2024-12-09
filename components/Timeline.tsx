@@ -2,7 +2,11 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
-const ProposalButton = () => {
+type GreetingProps = {
+  name: string;
+};
+
+const ProposalButton = (prop:GreetingProps) => {
   return (
     <View style={styles.container}>
       {/* Circle with Checkmark Icon */}
@@ -21,7 +25,7 @@ const ProposalButton = () => {
 
       {/* Proposal Text */}
       <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Proposal</Text>
+        <Text style={styles.buttonText}>{prop.name}</Text>
       </TouchableOpacity>
 
       {/* Arrow */}
@@ -37,6 +41,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     marginTop: 20,
+    marginRight : 20,
   },
   iconContainer: {
     backgroundColor: '#fff', // Light background for the icon circle
