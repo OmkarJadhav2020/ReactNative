@@ -12,7 +12,9 @@ import {
 import { login } from "@/api"; // Ensure this API function is correct.
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { baseURL } from "@/constants/Colors";
 const { width } = Dimensions.get("window");
+
 
 export default function Login() {
   const [credentials, setCredentials] = React.useState({
@@ -22,7 +24,7 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://192.168.63.86:8000/api/accounts/login/', credentials,{withCredentials: true});
+      const response = await axios.post(`http://${baseURL}:8000/api/accounts/login/`, credentials,{withCredentials: true});
       if (response.status === 200) {
         console.log(response)
         // Save session ID in AsyncStorage

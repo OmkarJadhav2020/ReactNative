@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
-
+import { baseURL } from "@/constants/Colors";
 SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   useEffect(() => {
@@ -11,7 +11,7 @@ export default function RootLayout() {
       const sessionId = await AsyncStorage.getItem('sessionid');
       if (sessionId) {
         try {
-          const response = await fetch('http://192.168.63.86:8000/api/accounts/me/', {
+          const response = await fetch(`http://${baseURL}:8000/api/accounts/me/`, {
             method: 'GET',
             headers: {
                 'Authorization': `Token ${sessionId}`,

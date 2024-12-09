@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import axios from "axios";
 import { router } from "expo-router";
-
+import { baseURL } from "@/constants/Colors";
 const ProjectProposalForm = () => {
   const [proposals, setProposals] = useState([]);
   const [selectedProposal, setSelectedProposal] = useState(null); // Store the selected proposal for the modal
@@ -18,7 +18,7 @@ const ProjectProposalForm = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const response = await axios.get("http://192.168.63.86:8000/api/accounts/proposals/");
+      const response = await axios.get(`http://${baseURL}:8000/api/accounts/proposals/`);
       if (response) {
         setProposals(response.data.data);
       }
@@ -28,7 +28,7 @@ const ProjectProposalForm = () => {
 
   const handleDelete = async (proposalId) => {
     try {
-      await axios.delete(`http://192.168.63.86:8000/api/accounts/proposals/${proposalId}/`);
+      await axios.delete(`http://${baseURL}:8000/api/accounts/proposals/${proposalId}/`);
       Alert.alert("Deleted", "Proposal deleted successfully!");
       setProposals(proposals.filter((proposal) => proposal.id !== proposalId));
       setModalVisible(false);
@@ -40,7 +40,7 @@ const ProjectProposalForm = () => {
 
   const handleApprove = async (proposalId) => {
     try {
-      await axios.patch(`http://192.168.63.86:8000/api/accounts/proposals/${proposalId}/`, { status: "approved" });
+      await axios.patch(`http://${baseURL}/api/accounts/proposals/${proposalId}/`, { status: "approved" });
       Alert.alert("Approved", "Proposal approved successfully!");
       setProposals(proposals.filter((proposal) => proposal.id !== proposalId));
 

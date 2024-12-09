@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; // For icons
 import axios from 'axios';
-
+import { baseURL } from '@/constants/Colors';
+import { router } from 'expo-router';
 const ProjectCard = ({ project }) => {
   return (
     <View style={styles.card}>
@@ -44,7 +45,7 @@ const ProjectCard = ({ project }) => {
       </View>
 
       {/* Summary Button */}
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={()=>{router.replace("/projectInfo")}}>
         <Text style={styles.buttonText}>View Summary</Text>
       </TouchableOpacity>
     </View>
@@ -57,7 +58,7 @@ const App = () => {
   useEffect(() => {
     const getData = async () => {
       try {
-        const response = await axios.get("http://192.168.63.86:8000/api/accounts/projects/0/");
+        const response = await axios.get(`http://${baseURL}:8000/api/accounts/projects/0/`);
         setData(response.data.data);
       } catch (error) {
         console.error('Error fetching data:', error);

@@ -13,7 +13,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import axios from "axios";
 import { router } from "expo-router";
 import { Picker } from "@react-native-picker/picker"; // Add Picker import
-
+import { baseURL } from "@/constants/Colors";
 const ProjectProposalForm = () => {
   const [formData, setFormData] = useState({
     agency_name: "",
@@ -49,7 +49,7 @@ const ProjectProposalForm = () => {
 
   useEffect(()=>{
     const getData = async ()=>{
-      const response = await axios.get("http://192.168.63.86:8000/api/accounts/getlist");
+      const response = await axios.get(`http://${baseURL}:8000/api/accounts/getlist`);
       if(response)
       {
         setCoordinatorOption(response.data.data)
@@ -69,7 +69,7 @@ const ProjectProposalForm = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post("http://192.168.63.86:8000/api/accounts/proposals/", {
+      const response = await axios.post(`http://${baseURL}:8000/api/accounts/proposals/`, {
         ...formData,
         ...tableData,
       });

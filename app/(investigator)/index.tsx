@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from 'react
 import { FontAwesome } from '@expo/vector-icons'; // For icons
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
+import { baseURL } from '@/constants/Colors';
+import { router } from 'expo-router';
 const ProjectCard = ({ project }) => {
   return (
     <View style={styles.card}>
@@ -46,8 +46,8 @@ const ProjectCard = ({ project }) => {
       </View>
 
       {/* Summary Button */}
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>View Summary</Text>
+      <TouchableOpacity style={styles.button} onPress={()=>{router.replace(`/projectInfo?id=${project.id}`)}}>
+        <Text style={styles.buttonText} >View Summary</Text>
       </TouchableOpacity>
     </View>
   );
@@ -61,7 +61,7 @@ const App = () => {
       try {
         const sessionId = await AsyncStorage.getItem('id');
         if(sessionId)
-        {const response = await axios.get(`http://192.168.63.86:8000/api/accounts/projects/${sessionId}/`);
+        {const response = await axios.get(`http://${baseURL}:8000/api/accounts/projects/${sessionId}/`);
         setData(response.data.data);
         }
       } catch (error) {
