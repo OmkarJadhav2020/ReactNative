@@ -25,4 +25,4 @@ export const Colors = {
   },
 };
 
-export const baseURL = "192.168.1.128"
+export const baseURL = "localhost"

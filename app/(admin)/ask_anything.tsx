@@ -8,9 +8,8 @@ const App = () => {
   ]);
 
   const [newMessage, setNewMessage] = useState('');
-  const scrollViewRef = useRef(null); // Ref for ScrollView
+  const scrollViewRef = useRef(null); 
 
-  // Function to send a new message
   const sendMessage = () => {
     if (!newMessage.trim()) return;
 
@@ -31,7 +30,7 @@ const App = () => {
 
       try {
         const response = await axios.post(
-          `http://192.168.1.128:5000/ask_question`,
+          `http://192.168.148.86:5000/ask_question`,
           { question: newMessage }
         );
         botResponse.text = response.data.answer;
